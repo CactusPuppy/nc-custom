@@ -1,0 +1,10 @@
+#==================#
+# Join/Leave Module
+#==================#
+joinleave:
+  messages: false
+
+#===========================#
+# Spooky stuff (Don't Touch)
+#===========================#
+config-version: 0.1.0

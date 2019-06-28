@@ -3,8 +3,14 @@ package usa.cactuspuppy.nccustom;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.annotation.permission.ChildPermission;
+import org.bukkit.plugin.java.annotation.permission.Permission;
+import org.bukkit.plugin.java.annotation.plugin.*;
+import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import usa.cactuspuppy.nccustom.utils.Config;
 import usa.cactuspuppy.nccustom.utils.Logger;
 
@@ -12,6 +18,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Plugin(name = "NCCustom", version = "0.1")
+@Website("www.crashtc.com")
+@Description("Custom plugin for the Noteblock Corner")
+@Author("CactusPuppy")
+@LogPrefix("NCCustom")
+@ApiVersion(ApiVersion.Target.v1_13)
+@Permission(name = "nccustom.*", desc = "Wildcard permission", children = {@ChildPermission(name = "nccustom.admin")})
+@Permission(name = "nccustom.admin", desc = "Allows admin access", defaultValue = PermissionDefault.OP)
 public class Main extends JavaPlugin {
     @Getter private static Main instance;
     @Getter private static Config mainConfig;
@@ -24,6 +38,11 @@ public class Main extends JavaPlugin {
             Logger.logSevere(this.getClass(), "Failure to initiate plugin, disabling...");
             Bukkit.getPluginManager().disablePlugin(this);
         }
+        long elapsedNanos = System.nanoTime() - start;
+        Logger.logInfo(this.getClass(), ChatColor.GOLD + "NCCustom" + ChatColor.GREEN + " startup complete!");
+        Logger.logInfo(this.getClass(), String.format(
+                ChatColor.LIGHT_PURPLE + "Time Elapsed: " + ChatColor.AQUA + "%1$.2fms (%2$dns)",
+                elapsedNanos / 10e6, elapsedNanos));
     }
 
     @Override

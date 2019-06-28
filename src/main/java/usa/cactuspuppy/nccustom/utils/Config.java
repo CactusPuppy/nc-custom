@@ -56,7 +56,21 @@ public final class Config {
         }
     }
 
-    void readValues(InputStream inputStream) {
+    /**
+     * Forces the config to read from disk, overwriting all values with disk values
+     * @return Whether read from disk was successful
+     */
+    public boolean refreshConfig() {
+        try {
+            readValues(new FileInputStream(configFile));
+            return true;
+        } catch (FileNotFoundException e) {
+            Logger.logWarning(this.getClass(), "Could not find config file " + configFile.getName() + " on refresh request", e);
+            return false;
+        }
+    }
+
+    private void readValues(InputStream inputStream) {
         //Initialize temporary variables
         LinkedList<Integer> currIndents = new LinkedList<>();
         currIndents.addLast(0);
