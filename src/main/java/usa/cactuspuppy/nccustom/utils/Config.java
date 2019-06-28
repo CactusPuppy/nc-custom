@@ -1,6 +1,7 @@
 package usa.cactuspuppy.nccustom.utils;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import usa.cactuspuppy.nccustom.Main;
 
@@ -15,6 +16,12 @@ import java.util.regex.Pattern;
  * @author CactusPuppy
  */
 public final class Config {
+    @Getter @Setter
+    /**
+     * How many spaces each level should indent
+     */
+    private static int spacesPerIndent = 2;
+
     @Getter
     private File configFile;
     /**
@@ -37,13 +44,23 @@ public final class Config {
      * Stores how many lines are
      */
     private int numLines;
+    /**
+     * Stores the exit code of the constructor<br>
+     *     -1 - Uninitialized
+     *     0 - OK
+     *     1 - FileNotFound
+     */
+    @Getter
+    private int initCode = -1;
 
     public Config() {
         configFile = new File(Main.getInstance().getDataFolder(), "config.yml");
         try {
             readValues(new FileInputStream(configFile));
+            initCode = 0;
         } catch (FileNotFoundException e) {
             Logger.logWarning(this.getClass(), "Could not find config file " + configFile.getName() + " on config construction", e);
+            initCode = 1;
         }
     }
 
@@ -56,21 +73,15 @@ public final class Config {
         }
     }
 
-    /**
-     * Forces the config to read from disk, overwriting all values with disk values
-     * @return Whether read from disk was successful
-     */
-    public boolean refreshConfig() {
+    public void reload() {
         try {
             readValues(new FileInputStream(configFile));
-            return true;
         } catch (FileNotFoundException e) {
-            Logger.logWarning(this.getClass(), "Could not find config file " + configFile.getName() + " on refresh request", e);
-            return false;
+            Logger.logWarning(this.getClass(), "Problem reloading from disk", e);
         }
     }
 
-    private void readValues(InputStream inputStream) {
+    void readValues(InputStream inputStream) {
         //Initialize temporary variables
         LinkedList<Integer> currIndents = new LinkedList<>();
         currIndents.addLast(0);
@@ -178,7 +189,8 @@ public final class Config {
             }
             writer.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.logWarning(this.getClass(), "Problem saving config file " + configFile.getName(), e);
+            return false;
         }
         return true;
     }
@@ -210,8 +222,12 @@ public final class Config {
         return new HashMap<>(nonKeyLocs);
     }
 
-    public void set(String key, String value) {
+    public boolean set(String key, String value) {
+        if (!values.containsKey(key)) {
+            return false;
+        }
         values.put(key, value);
+        return true;
     }
 
     @Override

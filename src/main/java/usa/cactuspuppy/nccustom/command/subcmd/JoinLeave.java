@@ -1,5 +1,7 @@
 package usa.cactuspuppy.nccustom.command.subcmd;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -23,19 +25,21 @@ public class JoinLeave extends CustomCommand implements Listener {
     /**
      * Whether to show join/leave messages
      */
+    @Getter @Setter
     private static boolean allowMessages;
 
     public JoinLeave() {
-        super("joinleave", "joinleave [true/false]", "Disable or enable default server join messages");
-        allowMessages = Boolean.valueOf(Main.getMainConfig().get("joinleave.messages", "true"));
+        super("joinleave", "joinleave [true/false]",
+        "Disable or enable default server join messages",
+        "jl");
+        allowMessages = Boolean.valueOf(Main.getInstance().getMainConfig().get("joinleave.messages", "true"));
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
     }
 
     @Override
-    public void onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length < 1) {
-            commandSender.sendMessage(ChatColor.RED + "Usage: /nc joinleave <true|false|status>");
-            return;
+            return false;
         }
         boolean allow;
         switch (args[0].toLowerCase()) {
@@ -50,14 +54,17 @@ public class JoinLeave extends CustomCommand implements Listener {
                         ChatColor.WHITE + (allowMessages ? "on" : "off"));
             default:
                 commandSender.sendMessage(ChatColor.RED + args[0] + " is not true or false.");
-                return;
+                return false;
         }
         if (allow == allowMessages) {
             commandSender.sendMessage(ChatColor.YELLOW + "Join/leave messages are already " +
                     ChatColor.WHITE + (allow ? "enabled" : "disabled"));
-            return;
+            return true;
         }
         allowMessages = allow;
+        commandSender.sendMessage(ChatColor.GREEN + "Join/leave messages are now " +
+                    ChatColor.WHITE + (allowMessages ? "ON" : "OFF"));
+        return true;
     }
 
     @Override
@@ -76,7 +83,7 @@ public class JoinLeave extends CustomCommand implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public static void onPlayerJoin(PlayerJoinEvent event) {
         if (allowMessages) {
             return;
         }
@@ -84,7 +91,7 @@ public class JoinLeave extends CustomCommand implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public static void onPlayerQuit(PlayerQuitEvent event) {
         if (allowMessages) {
             return;
         }
