@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public abstract class CustomCommand {
     private String usage;
     @Getter
     private String description;
-    protected static Map<MoreInfoKey, String> moreInfo;
+    protected static Map<MoreInfoKey, String> moreInfo = new HashMap<>();
 
     public enum MoreInfoKey {
         /**
@@ -35,12 +36,15 @@ public abstract class CustomCommand {
         REQUIRED_PERMISSION
     }
 
-    public CustomCommand(String cmdName, String usage, String description) {
+    public CustomCommand(String cmdName, String usage, String description, String... aliases) {
         this.cmdName = cmdName;
         this.usage = usage;
         this.description = description;
         fixMissingMoreInfo();
         Delegator.registerSubcommand(cmdName, this);
+        for (String alias : aliases) {
+            Delegator.registerAlias(alias, this);
+        }
     }
 
     public Map<MoreInfoKey, String> getMoreInfo() {
@@ -100,7 +104,15 @@ public abstract class CustomCommand {
         return true;
     }
 
-    public abstract void onCommand(CommandSender commandSender, Command command, String alias, String[] args);
+    /**
+     * Executes the command
+     * @param commandSender sender of command
+     * @param command command object
+     * @param alias Command alias
+     * @param args Arguments excluding subcommand
+     * @return Whether command was correctly formatted
+     */
+    public abstract boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args);
 
     public abstract List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args);
 }

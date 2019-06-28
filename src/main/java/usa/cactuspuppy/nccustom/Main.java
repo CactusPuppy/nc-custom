@@ -6,7 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.java.annotation.permission.ChildPermission;
 import org.bukkit.plugin.java.annotation.permission.Permission;
 import org.bukkit.plugin.java.annotation.plugin.*;
@@ -28,7 +30,7 @@ import java.io.InputStream;
 @Permission(name = "nccustom.admin", desc = "Allows admin access", defaultValue = PermissionDefault.OP)
 public class Main extends JavaPlugin {
     @Getter private static Main instance;
-    @Getter private static Config mainConfig;
+    @Getter private Config mainConfig;
 
     @Override
     public void onEnable() {
@@ -37,6 +39,7 @@ public class Main extends JavaPlugin {
         if (!initPlugin()) {
             Logger.logSevere(this.getClass(), "Failure to initiate plugin, disabling...");
             Bukkit.getPluginManager().disablePlugin(this);
+            return;
         }
         long elapsedNanos = System.nanoTime() - start;
         Logger.logInfo(this.getClass(), ChatColor.GOLD + "NCCustom" + ChatColor.GREEN + " startup complete!");
@@ -95,5 +98,15 @@ public class Main extends JavaPlugin {
         //Set mainConfig
         mainConfig = new Config();
         return true;
+    }
+
+    //MockBukkit constructors
+    public Main() {
+        super();
+    }
+
+    protected Main(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
+    {
+        super(loader, description, dataFolder, file);
     }
 }
