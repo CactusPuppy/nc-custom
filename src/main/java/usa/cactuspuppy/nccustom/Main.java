@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.annotation.permission.ChildPermission;
 import org.bukkit.plugin.java.annotation.permission.Permission;
 import org.bukkit.plugin.java.annotation.plugin.*;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
+import usa.cactuspuppy.nccustom.command.Delegator;
 import usa.cactuspuppy.nccustom.utils.Config;
 import usa.cactuspuppy.nccustom.utils.Logger;
 
@@ -20,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Plugin(name = "NCCustom", version = "0.1")
+@Plugin(name = "NCCustom", version = "0.1.2")
 @Website("www.crashtc.com")
 @Description("Custom plugin for the Noteblock Corner")
 @Author("CactusPuppy")
@@ -69,7 +70,9 @@ public class Main extends JavaPlugin {
             Logger.logSevere(this.getClass(), "Could not obtain /nccustom command");
             return false;
         }
-
+        Delegator delegator = new Delegator();
+        ncCustom.setTabCompleter(delegator);
+        ncCustom.setExecutor(delegator);
         return true;
     }
 

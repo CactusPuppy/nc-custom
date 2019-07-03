@@ -29,7 +29,7 @@ public class JoinLeave extends CustomCommand implements Listener {
     private static boolean allowMessages;
 
     public JoinLeave() {
-        super("joinleave", "joinleave [true/false]",
+        super("joinleave", "joinleave <true|false|status>",
         "Disable or enable default server join messages",
         "jl");
         allowMessages = Boolean.valueOf(Main.getInstance().getMainConfig().get("joinleave.messages", "true"));
@@ -39,7 +39,9 @@ public class JoinLeave extends CustomCommand implements Listener {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String alias, String[] args) {
         if (args.length < 1) {
-            return false;
+            commandSender.sendMessage(ChatColor.GREEN + "Join/leave messages are currently " +
+                    (allowMessages ? "ON" : "OFF"));
+            return true;
         }
         boolean allow;
         switch (args[0].toLowerCase()) {

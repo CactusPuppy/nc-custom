@@ -18,7 +18,7 @@ public final class Logger {
     @Setter
     private static boolean debug = false;
     @Setter
-    private static java.util.logging.Logger output = java.util.logging.Logger.getLogger("UHC");
+    private static java.util.logging.Logger output = java.util.logging.Logger.getLogger("NCCustom");
 
 
     public enum Level {
